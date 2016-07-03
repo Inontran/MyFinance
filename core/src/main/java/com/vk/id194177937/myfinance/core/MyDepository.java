@@ -8,11 +8,11 @@ import java.util.Map;
 /**
  * Created by ubuntuvod on 03.07.16.
  */
-public class Depository {
+public class MyDepository {
 
     private String name;
     private HashMap<String, Float> mapCurrency = new HashMap<>();
-    private Depository parentDepository;
+    private MyDepository parentMyDepository;
 
 
     //working with currency
@@ -140,12 +140,12 @@ public class Depository {
         this.name = name;
     }
 
-    public Depository getParentDepository() {
-        return parentDepository;
+    public MyDepository getParentMyDepository() {
+        return parentMyDepository;
     }
 
-    public void setParentDepository(Depository parentDepository) {
-        this.parentDepository = parentDepository;
+    public void setParentMyDepository(MyDepository parentMyDepository) {
+        this.parentMyDepository = parentMyDepository;
     }
 
 
