@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by Inontran on 03.07.16.
  */
 
-public class DefaultStorage implements Depository{
+public class DefaultDepository implements Depository{
 
     private String name;
     private Map<Currency, BigDecimal> currencyAmounts = new HashMap<>();
