@@ -1,6 +1,7 @@
 package com.vk.id194177937.myfinance.core.impls;
 
 import com.vk.id194177937.myfinance.core.exceptions.CurrencyNotFoundException;
+import com.vk.id194177937.myfinance.core.exceptions.TooSmallBalanceException;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -94,8 +95,11 @@ public class DefaultDepository implements Depository{
             findCurrencyIntoList(currency);
             BigDecimal oldAmount = currencyAmounts.get(currency);
             BigDecimal newValue = oldAmount.subtract(amount);
+            if (newValue.compareTo(BigDecimal.ZERO) < -1) throw new TooSmallBalanceException();
             currencyAmounts.put(currency, newValue);
         } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        } catch (TooSmallBalanceException e) {
             e.getMessage();
         }
     }
