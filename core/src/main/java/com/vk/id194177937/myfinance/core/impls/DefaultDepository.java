@@ -1,7 +1,7 @@
 package com.vk.id194177937.myfinance.core.impls;
 
-import com.vk.id194177937.myfinance.core.exceptions.CurrencyNotFoundException;
-import com.vk.id194177937.myfinance.core.exceptions.TooSmallBalanceException;
+import com.vk.id194177937.myfinance.core.exceptions.CurrencyException;
+import com.vk.id194177937.myfinance.core.exceptions.AmountException;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -20,8 +20,23 @@ import java.util.Map;
 public class DefaultDepository implements Depository{
 
     private String name;
+
+    // сразу инициализируем пустые коллекции, потому что хоть одна валюта будет
     private Map<Currency, BigDecimal> currencyAmounts = new HashMap<>();
     private List<Currency> currencyList = new ArrayList<>();
+
+    public DefaultDepository() {
+    }
+
+    public DefaultDepository(String name) {
+        this.name = name;
+    }
+
+    public DefaultDepository(String name, Map<Currency, BigDecimal> currencyAmounts, List<Currency> currencyList) {
+        this.name = name;
+        this.currencyAmounts = currencyAmounts;
+        this.currencyList = currencyList;
+    }
 
     @Override
     public List<Currency> getAvailableCurrencies() {
@@ -52,76 +67,72 @@ public class DefaultDepository implements Depository{
 
 
     @Override
-    public BigDecimal getAmount(Currency currency) {
-        try {
-            findCurrencyIntoList(currency);
-            return currencyAmounts.get(currency);
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
-        }
-        return null;
+    public BigDecimal getAmount(Currency currency) throws CurrencyException {
+        findCurrencyIntoList(currency);
+        return currencyAmounts.get(currency);
     }
 
 
     // ручное обновление баланса
     @Override
-    public void changeAmount(BigDecimal amount, Currency currency)  {
-        try {
-            findCurrencyIntoList(currency);
-            currencyAmounts.put(currency, amount);
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
-        }
+    public void changeAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+        findCurrencyIntoList(currency);
+        currencyAmounts.put(currency, amount);
     }
 
 
     // добавление денег в хранилище
     @Override
-    public void addAmount(BigDecimal amount, Currency currency)  {
-        try {
-            findCurrencyIntoList(currency);
-            BigDecimal oldAmount = currencyAmounts.get(currency);
-            currencyAmounts.put(currency, oldAmount.add(amount));
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
-        }
+    public void addAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+        findCurrencyIntoList(currency);
+        BigDecimal oldAmount = currencyAmounts.get(currency);
+        currencyAmounts.put(currency, oldAmount.add(amount));
     }
 
 
     // отнимаем деньги из хранилища
     @Override
-    public void expenseAmount(BigDecimal amount, Currency currency)  {
-        try {
-            findCurrencyIntoList(currency);
-            BigDecimal oldAmount = currencyAmounts.get(currency);
-            BigDecimal newValue = oldAmount.subtract(amount);
-            if (newValue.compareTo(BigDecimal.ZERO) < -1) throw new TooSmallBalanceException();
-            currencyAmounts.put(currency, newValue);
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
-        } catch (TooSmallBalanceException e) {
-            e.getMessage();
+    public void expenseAmount(BigDecimal amount, Currency currency) throws CurrencyException, AmountException {
+        findCurrencyIntoList(currency);
+        BigDecimal oldAmount = currencyAmounts.get(currency);
+        BigDecimal newValue = oldAmount.subtract(amount);
+        checkAmount(amount);// не даем балансу уйти в минус
+        currencyAmounts.put(currency, newValue);
+    }
+
+    // сумма не должна быть меньше нуля (в реальности такое невозможно, мы не можем потратить больше того, что есть)
+    private void checkAmount(BigDecimal amount) throws AmountException {
+
+        if (amount.compareTo(BigDecimal.ZERO)<0){
+            throw new AmountException("Amount can't be < 0");
         }
+
     }
 
 
 
 
+
     @Override
-    public void addCurrency(Currency currency) {
+    public void addCurrency(Currency currency) throws CurrencyException {
+        if (currencyAmounts.containsKey(currency)){
+            throw new CurrencyException("Currency already exist");// пока просто сообщение на англ, без локализации
+        }
         currencyList.add(currency);
         currencyAmounts.put(currency, BigDecimal.ZERO);
     }
 
     @Override
-    public void deleteCurrency(Currency currency)  {
-        try {
-            findCurrencyIntoList(currency);
-            currencyAmounts.remove(currency);
-            currencyList.remove(currency);
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
+    public void deleteCurrency(Currency currency) throws CurrencyException {
+        findCurrencyIntoList(currency);
+
+        // не даем удалять валюту, если в хранилище есть деньги по этой валюте
+        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)){
+            throw new CurrencyException("Can't delete currency with amount");
         }
+
+        currencyAmounts.remove(currency);
+        currencyList.remove(currency);
     }
 
 
@@ -132,29 +143,21 @@ public class DefaultDepository implements Depository{
     }
 
     @Override
-    public Currency getCurrency(String code)  {
+    public Currency getCurrency(String code) throws CurrencyException {
         // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
         // можно использовать библиотеку Apache Commons Collections
-        try {
-            findCurrencyIntoList(Currency.getInstance(code));
-            for (Currency currency : currencyList) {
-                if (currency.getCurrencyCode().equals(code)){
-                    return currency;
-                }
+        findCurrencyIntoList(Currency.getInstance(code));
+        for (Currency currency : currencyList) {
+            if (currency.getCurrencyCode().equals(code)){
+                return currency;
             }
-        } catch (CurrencyNotFoundException e) {
-            e.getMessage();
         }
-        return null;
+        throw new CurrencyException("Currency (code = "+code+" ) not exist in depository");
     }
 
-    private void findCurrencyIntoList(Currency currency) throws CurrencyNotFoundException {
-        boolean flag = false;
-        for (Currency c : currencyList) {
-            if (currency.equals(c)) {
-                break;
-            }
+    private void findCurrencyIntoList(Currency currency) throws CurrencyException {
+        if (!currencyAmounts.containsKey(currency)){
+            throw new CurrencyException("Currency "+currency+" not exist");
         }
-        if (!flag) throw new CurrencyNotFoundException();
     }
 }
