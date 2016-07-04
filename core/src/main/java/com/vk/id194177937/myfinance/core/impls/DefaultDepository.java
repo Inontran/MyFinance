@@ -1,5 +1,6 @@
 package com.vk.id194177937.myfinance.core.impls;
 
+import com.vk.id194177937.myfinance.core.exceptions.CurrencyNotFoundException;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -12,7 +13,9 @@ import java.util.Map;
 /**
  * Created by Inontran on 03.07.16.
  */
+//TODO изменить, по возможности, возврат результата методов с null на что-то более безопасное
 
+//TODO реализовать грамотную работу с потоками (Thread.sleep)
 public class DefaultDepository implements Depository{
 
     private String name;
@@ -49,31 +52,52 @@ public class DefaultDepository implements Depository{
 
     @Override
     public BigDecimal getAmount(Currency currency) {
-        return currencyAmounts.get(currency);
+        try {
+            findCurrencyIntoList(currency);
+            return currencyAmounts.get(currency);
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
+        return null;
     }
 
 
     // ручное обновление баланса
     @Override
     public void changeAmount(BigDecimal amount, Currency currency)  {
-        currencyAmounts.put(currency, amount);
+        try {
+            findCurrencyIntoList(currency);
+            currencyAmounts.put(currency, amount);
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
     }
 
 
     // добавление денег в хранилище
     @Override
     public void addAmount(BigDecimal amount, Currency currency)  {
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        currencyAmounts.put(currency, oldAmount.add(amount));
+        try {
+            findCurrencyIntoList(currency);
+            BigDecimal oldAmount = currencyAmounts.get(currency);
+            currencyAmounts.put(currency, oldAmount.add(amount));
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
     }
 
 
     // отнимаем деньги из хранилища
     @Override
     public void expenseAmount(BigDecimal amount, Currency currency)  {
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        BigDecimal newValue = oldAmount.subtract(amount);
-        currencyAmounts.put(currency, newValue);
+        try {
+            findCurrencyIntoList(currency);
+            BigDecimal oldAmount = currencyAmounts.get(currency);
+            BigDecimal newValue = oldAmount.subtract(amount);
+            currencyAmounts.put(currency, newValue);
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
     }
 
 
@@ -87,8 +111,13 @@ public class DefaultDepository implements Depository{
 
     @Override
     public void deleteCurrency(Currency currency)  {
-        currencyAmounts.remove(currency);
-        currencyList.remove(currency);
+        try {
+            findCurrencyIntoList(currency);
+            currencyAmounts.remove(currency);
+            currencyList.remove(currency);
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
     }
 
 
@@ -102,14 +131,26 @@ public class DefaultDepository implements Depository{
     public Currency getCurrency(String code)  {
         // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
         // можно использовать библиотеку Apache Commons Collections
+        try {
+            findCurrencyIntoList(Currency.getInstance(code));
+            for (Currency currency : currencyList) {
+                if (currency.getCurrencyCode().equals(code)){
+                    return currency;
+                }
+            }
+        } catch (CurrencyNotFoundException e) {
+            e.getMessage();
+        }
+        return null;
+    }
 
-        for (Currency currency : currencyList) {
-            if (currency.getCurrencyCode().equals(code)){
-                return currency;
+    private void findCurrencyIntoList(Currency currency) throws CurrencyNotFoundException {
+        boolean flag = false;
+        for (Currency c : currencyList) {
+            if (currency.equals(c)) {
+                break;
             }
         }
-
-        return null;
-
+        if (!flag) throw new CurrencyNotFoundException();
     }
 }
