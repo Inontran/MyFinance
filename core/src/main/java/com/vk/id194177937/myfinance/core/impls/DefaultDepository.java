@@ -1,5 +1,6 @@
 package com.vk.id194177937.myfinance.core.impls;
 
+import com.vk.id194177937.myfinance.core.abstracts.AbstractTreeNode;
 import com.vk.id194177937.myfinance.core.exceptions.CurrencyException;
 import com.vk.id194177937.myfinance.core.exceptions.AmountException;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
@@ -17,7 +18,7 @@ import java.util.Map;
 //TODO изменить, по возможности, возврат результата методов с null на что-то более безопасное
 
 //TODO реализовать грамотную работу с потоками (Thread.sleep)
-public class DefaultDepository implements Depository{
+public class DefaultDepository extends AbstractTreeNode implements Depository{
 
     private String name;
 
@@ -29,14 +30,27 @@ public class DefaultDepository implements Depository{
     }
 
     public DefaultDepository(String name) {
-        this.name = name;
+        super(name);
     }
 
-    public DefaultDepository(String name, Map<Currency, BigDecimal> currencyAmounts, List<Currency> currencyList) {
-        this.name = name;
+    public DefaultDepository(String name, long id) {
+        super(name, id);
+    }
+
+    public DefaultDepository(List<Currency> currencyList, Map<Currency, BigDecimal> currencyAmounts, String name) {
+        super(name);
+        this.currencyList = currencyList;
         this.currencyAmounts = currencyAmounts;
+    }
+
+    public DefaultDepository(Map<Currency, BigDecimal> currencyAmounts) {
+        this.currencyAmounts = currencyAmounts;
+    }
+
+    public DefaultDepository(List<Currency> currencyList) {
         this.currencyList = currencyList;
     }
+
 
     @Override
     public List<Currency> getAvailableCurrencies() {
