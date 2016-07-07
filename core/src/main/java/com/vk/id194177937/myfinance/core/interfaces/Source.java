@@ -7,8 +7,6 @@ import java.util.List;
 /**
  * Created by Inontran on 06.07.16.
  */
-public interface Source {
-    String getName();// обязывает реализовать свойство name
-    long getId();
+public interface Source extends TreeNode{
     OperationType getOperationType();
 }

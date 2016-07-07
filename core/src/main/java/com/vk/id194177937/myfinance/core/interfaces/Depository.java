@@ -12,8 +12,7 @@ import java.util.Map;
  * Created by Inontran on 03.07.16.
  */
 // TODO изменить тип BigDecimal на готовый класс по работе с деньгами Money
-public interface Depository {
-    String getName();// обязывает реализовать свойство name
+public interface Depository extends TreeNode{
 
     // получение баланса (остатка)
     Map<Currency, BigDecimal> getCurrencyAmounts(); // остаток по каждой доступной валюте в хранилище

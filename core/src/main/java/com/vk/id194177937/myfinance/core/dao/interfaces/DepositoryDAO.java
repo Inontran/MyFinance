@@ -12,5 +12,5 @@ public interface DepositoryDAO extends CommonDAO<Depository> {
     //boolean нужен чтобы удостовериться, что операция прошла успешно
     boolean addCurrency(Depository depository, Currency currency);
     boolean deleteCurrency(Depository depository, Currency currency);
-    boolean updateCurrency(Depository depository, BigDecimal bigDecimal);
+    boolean updateAmount(Depository depository, BigDecimal bigDecimal);
 }
