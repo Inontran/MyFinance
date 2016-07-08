@@ -1,5 +1,6 @@
 package com.vk.id194177937.myfinance.core.dao.interfaces;
 
+import com.vk.id194177937.myfinance.core.exceptions.CurrencyException;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.util.Currency;
  */
 public interface DepositoryDAO extends CommonDAO<Depository> {
     //boolean нужен чтобы удостовериться, что операция прошла успешно
-    boolean addCurrency(Depository depository, Currency currency);
-    boolean deleteCurrency(Depository depository, Currency currency);
-    boolean updateAmount(Depository depository, BigDecimal bigDecimal);
+    boolean addCurrency(Depository depository, Currency currency) throws CurrencyException;
+    boolean deleteCurrency(Depository depository, Currency currency) throws CurrencyException;
+    boolean updateAmount(Depository depository, Currency currency, BigDecimal bigDecimal);
 }
