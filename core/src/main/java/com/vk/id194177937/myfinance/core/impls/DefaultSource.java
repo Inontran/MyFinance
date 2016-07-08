@@ -1,9 +1,10 @@
 package com.vk.id194177937.myfinance.core.impls;
 
 import com.vk.id194177937.myfinance.core.abstracts.AbstractTreeNode;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.interfaces.Source;
 import com.vk.id194177937.myfinance.core.interfaces.TreeNode;
-import com.vk.id194177937.myfinance.core.objects.OperationType;
+
 
 import java.util.List;
 

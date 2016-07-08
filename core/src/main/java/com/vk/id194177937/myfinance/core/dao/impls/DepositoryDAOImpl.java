@@ -70,7 +70,7 @@ public class DepositoryDAOImpl implements DepositoryDAO {
     }
 
     @Override
-    public boolean updateAmount(Depository depository, BigDecimal bigDecimal) {
+    public boolean updateAmount(Depository depository, Currency currency, BigDecimal bigDecimal) {
         return false;
     }
 

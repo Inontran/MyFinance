@@ -1,6 +1,7 @@
 package com.vk.id194177937.myfinance.core;
 
 import com.vk.id194177937.myfinance.core.dao.impls.DepositoryDAOImpl;
+import com.vk.id194177937.myfinance.core.dao.impls.SourceDAOImpl;
 import com.vk.id194177937.myfinance.core.database.SQLiteConnection;
 
 import java.sql.ResultSet;
@@ -18,6 +19,6 @@ public class Tester {
         } catch (Exception e){
             e.printStackTrace();
         }
-        new DepositoryDAOImpl().getAll();
+        new SourceDAOImpl().getAll();
     }
 }

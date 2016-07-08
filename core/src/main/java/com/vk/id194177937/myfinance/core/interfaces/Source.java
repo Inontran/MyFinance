@@ -1,6 +1,6 @@
 package com.vk.id194177937.myfinance.core.interfaces;
 
-import com.vk.id194177937.myfinance.core.objects.OperationType;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 
 import java.util.List;
 
