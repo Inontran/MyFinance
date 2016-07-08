@@ -12,11 +12,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Inontran on 08.07.16.
@@ -27,7 +28,7 @@ public class SourceDAOImpl implements SourceDAO {
     private static final String SOURCE_TABLE = "source";
 
     private List<Source> sourceList = new ArrayList<>();
-    private Map<OperationType, List<Source>> sourceMap = new HashMap<>();// для каждого ключа (типа операции) - своя коллекция источников (корневых элементов дерева)
+    private Map<OperationType, List<Source>> sourceMap = new EnumMap<>(OperationType.class);// для каждого ключа (типа операции) - своя коллекция источников (корневых элементов дерева)
 
     private TreeConstructor<Source> treeConstructor = new TreeConstructor();// для каждого объекта создаем свой экземпляр TreeConstructor - т.к. передается тип Generics
 
@@ -45,20 +46,30 @@ public class SourceDAOImpl implements SourceDAO {
                 source.setName(rs.getString("name"));
 
                 Integer operationTypeId = rs.getInt("operation_type_id"); // можно использовать тип Integer
+
+                OperationType operationType = OperationType.getType(operationTypeId);
                 source.setOperationType(OperationType.getType(operationTypeId));// operationType устанавливаем только для корневых элементов, т.к. для дочерних автоматически устанавливается тип от родителя
 
                 Long parentId = rs.getLong("parent_id");// тип Long, чтобы можно было проверять на null
-                treeConstructor.addToTree(parentId, source, sourceList);
 
+                sourceMap.put(operationType, sourceList);
+                treeConstructor.addToTree(parentId, source, sourceList);
             }
+            fillSourceMap();//разделем коллекции по типа один раз при инициализации
 
             return sourceList;// должен содержать только корневые элементы
-
         } catch (SQLException e) {
             Logger.getLogger(SourceDAOImpl.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return null;
+    }
+
+    private void fillSourceMap() {
+        // в sourceMap и sourceList находятся одни и те же объекты!!
+        for (OperationType type: OperationType.values()) {
+            // используем lambda выражение для фильтрации
+            sourceMap.put(type, sourceList.stream().filter(s -> s.getOperationType() == type).collect(Collectors.toList()));
+        }
     }
 
     @Override
@@ -103,5 +114,24 @@ public class SourceDAOImpl implements SourceDAO {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean addSource(Source source) {
+        try(PreparedStatement preparedStmt = SQLiteConnection.getConnection().prepareStatement("insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)")) {
+            preparedStmt.setString(1, source.getName());
+            preparedStmt.setLong(2, source.getParent().getId());
+            preparedStmt.setLong(3, source.getOperationType().getId());
+
+            if (preparedStmt.executeUpdate() == 1) return true;
+        } catch (SQLException e) {
+            Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return false;
+    }
+
+    @Override
+    public List<Source> getList(OperationType operationType) {
+        return sourceMap.get(operationType);
     }
 }

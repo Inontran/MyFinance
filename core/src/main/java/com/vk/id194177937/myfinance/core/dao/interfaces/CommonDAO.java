@@ -9,6 +9,6 @@ import java.util.List;
 public interface CommonDAO<T> {
     List<T> getAll();
     T get(long id);
-    boolean update(T depository);//boolean нужен чтобы удостовериться, что операция прошла успешно
-    boolean delete(T depository);
+    boolean update(T element);//boolean нужен чтобы удостовериться, что операция прошла успешно
+    boolean delete(T element);
 }

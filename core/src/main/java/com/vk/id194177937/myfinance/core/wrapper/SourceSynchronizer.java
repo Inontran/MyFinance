@@ -1,6 +1,7 @@
 package com.vk.id194177937.myfinance.core.wrapper;
 
 import com.vk.id194177937.myfinance.core.dao.interfaces.SourceDAO;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.interfaces.Source;
 
 import java.util.List;
@@ -46,5 +47,16 @@ public class SourceSynchronizer implements SourceDAO {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean addSource(Source source) {
+        if (sourceDAO.addSource(source)) sourceList.add(source);
+        return false;
+    }
+
+    @Override
+    public List<Source> getList(OperationType operationType) {
+        return sourceDAO.getList(operationType);
     }
 }
