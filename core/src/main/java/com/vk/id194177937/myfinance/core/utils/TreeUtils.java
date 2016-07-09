@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Inontran on 07.07.16.
  */
 // построитель дерева
-public class TreeConstructor<T extends TreeNode> {
+public class TreeUtils<T extends TreeNode> {
 
     // встраивает новый элемент в нужное место дерева: суть в том, что нужно найти родительский элемент для объекта newNode
     public void addToTree(long parentId, T newNode, List<T> listElements) {

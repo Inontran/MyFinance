@@ -4,7 +4,7 @@ import com.vk.id194177937.myfinance.core.dao.interfaces.DepositoryDAO;
 import com.vk.id194177937.myfinance.core.database.SQLiteConnection;
 import com.vk.id194177937.myfinance.core.impls.DefaultDepository;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
-import com.vk.id194177937.myfinance.core.utils.TreeConstructor;
+import com.vk.id194177937.myfinance.core.utils.TreeUtils;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -25,7 +25,7 @@ public class DepositoryDAOImpl implements DepositoryDAO {
     private static final String CURRENCY_TABLE = "currency_amount";
     private static final String DEPOSITORY_TABLE = "depository";
 
-    private TreeConstructor<Depository> treeConstructor = new TreeConstructor();
+    private TreeUtils<Depository> treeUtils = new TreeUtils();
 
     private List<Depository> depositoryList = new ArrayList<>();
 
@@ -93,7 +93,7 @@ public class DepositoryDAOImpl implements DepositoryDAO {
 
                 long parentId = rs.getLong("parent_id");
 
-                treeConstructor.addToTree(parentId, depository, depositoryList);
+                treeUtils.addToTree(parentId, depository, depositoryList);
 
             }
 
