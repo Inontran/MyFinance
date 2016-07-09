@@ -19,9 +19,6 @@ import java.util.Map;
 
 //TODO реализовать грамотную работу с потоками (Thread.sleep)
 public class DefaultDepository extends AbstractTreeNode implements Depository{
-
-    private String name;
-
     // сразу инициализируем пустые коллекции, потому что хоть одна валюта будет
     private Map<Currency, BigDecimal> currencyAmounts = new HashMap<>();
     private List<Currency> currencyList = new ArrayList<>();
@@ -68,15 +65,6 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
 
     public void setCurrencyAmounts(Map<Currency, BigDecimal> currencyAmounts) {
         this.currencyAmounts = currencyAmounts;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 
@@ -170,7 +158,7 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
     }
 
     private void findCurrencyIntoList(Currency currency) throws CurrencyException {
-        if (!currencyAmounts.containsKey(currency)){
+        if (currencyAmounts.containsKey(currency)){
             throw new CurrencyException("Currency "+currency+" not exist");
         }
     }

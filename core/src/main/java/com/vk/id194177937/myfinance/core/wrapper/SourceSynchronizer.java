@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  */
 public class SourceSynchronizer implements SourceDAO {
 
-    private SourceDAO sourceDAO;
     private TreeUtils<Source> treeUtils = new TreeUtils();// построитель дерева
 
     // Все коллекции хранят ссылки на одни и те же объекты, но в разных "срезах"
@@ -26,9 +25,11 @@ public class SourceSynchronizer implements SourceDAO {
     private Map<OperationType, List<Source>> sourceMap = new EnumMap<>(OperationType.class); // деревья объектов с разделением по типам операции
     private Map<Long, Source> identityMap = new HashMap<>(); // нет деревьев, каждый объект хранится отдельно, нужно для быстрого доступа к любому объекту по id (чтобы каждый раз не использовать перебор по всей коллекции List и не обращаться к бд)
 
+    private SourceDAO sourceDAO;// реализация слоя работы с БД
 
     public SourceSynchronizer(SourceDAO sourceDAO) {
         this.sourceDAO = sourceDAO;
+        init();
     }
 
     public void init() {
@@ -36,7 +37,7 @@ public class SourceSynchronizer implements SourceDAO {
 
         for (Source s : sourceList) {
             identityMap.put(s.getId(), s);
-            treeUtils.addToTree(s.getParent().getId(), s, treeList);
+            treeUtils.addToTree(s.getParentId(), s, treeList);
         }
 
         // важно - сначала построить деревья, уже потом разделять по типам операции
@@ -54,19 +55,19 @@ public class SourceSynchronizer implements SourceDAO {
     }
 
     @Override
-    public List<Source> getAll() {
+    public List<Source> getAll() {// возвращает объекты уже в виде деревьев
         return treeList;
     }
 
     @Override
-    public Source get(long id) {
-        // не делаем запрос в БД, а получаем ранее загруженный объект из коллекции
+    public Source get(long id) {// не делаем запрос в БД, а получаем ранее загруженный объект из коллекции
         return identityMap.get(id);
     }
 
+
     @Override
     public boolean update(Source source) {
-        if (sourceDAO.update(source)){
+        if (sourceDAO.update(source)) {
             return true;
         }
         return false;
@@ -89,20 +90,22 @@ public class SourceSynchronizer implements SourceDAO {
         return false;
     }
 
-    @Override
-    public boolean addSource(Source source) {
-        //TODO реализовать добавление нового источника
-//        if (sourceDAO.addSource(source)) sourceList.add(source);
-        return false;
-    }
 
     @Override
     public List<Source> getList(OperationType operationType) {
         return sourceMap.get(operationType);
     }
 
+
     // если понадобится напрямую получить объекты из БД - можно использовать sourceDAO
     public SourceDAO getSourceDAO() {
         return sourceDAO;
+    }
+
+    @Override
+    public boolean addSource(Source source) {
+        //TODO реализовать добавление нового источника
+//        if (sourceDAO.addSource(source)) sourceList.add(source);
+        return false;
     }
 }

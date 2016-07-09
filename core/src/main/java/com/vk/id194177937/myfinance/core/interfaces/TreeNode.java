@@ -23,4 +23,6 @@ public interface TreeNode {
     void setParent(TreeNode parent);	// установка родительского элемента
 
     boolean hasChildren();//проверка на наличие дочерних элементов
+
+    long getParentId();
 }

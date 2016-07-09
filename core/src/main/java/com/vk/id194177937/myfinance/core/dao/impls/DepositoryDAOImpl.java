@@ -24,15 +24,11 @@ public class DepositoryDAOImpl implements DepositoryDAO {
 
     private static final String CURRENCY_TABLE = "currency_amount";
     private static final String DEPOSITORY_TABLE = "depository";
-
-    private TreeUtils<Depository> treeUtils = new TreeUtils();
-
     private List<Depository> depositoryList = new ArrayList<>();
 
 
     @Override
     public boolean addCurrency(Depository depository, Currency currency) {
-
         // для автоматического закрытия ресурсов
         try (PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("insert into " + CURRENCY_TABLE + "(currency_code, depository_id, amount) values(?,?,?)");) {
 
@@ -57,25 +53,48 @@ public class DepositoryDAOImpl implements DepositoryDAO {
             stmt.setLong(1, depository.getId());
             stmt.setString(2, currency.getCurrencyCode());
 
-
             if (stmt.executeUpdate() == 1) {  // если была обновлена 1 запись
                 return true;
             }
-
         } catch (SQLException e) {
             Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return false;
     }
 
     @Override
     public boolean updateAmount(Depository depository, Currency currency, BigDecimal bigDecimal) {
+        try(PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("update " + CURRENCY_TABLE + " set amount=? where depository_id=? and currency_code=?")) {
+            stmt.setBigDecimal(1, bigDecimal);
+            stmt.setLong(2, depository.getId());
+            stmt.setString(3, currency.getCurrencyCode());
+            if (stmt.executeUpdate() == 1) {  // если запрос выполнился
+                return true;
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+        }
         return false;
     }
 
     @Override
     public Depository get(long id) {
+        try (PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("select * from " + DEPOSITORY_TABLE + " where id=?");) {
+
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery();){
+                DefaultDepository depository = null;
+                if (rs.next()){
+                    depository = new DefaultDepository();
+                    depository.setId(rs.getLong("id"));
+                    depository.setName(rs.getString("name"));
+                    depository.setParentId(rs.getLong("parent_id"));
+                }
+                return depository;
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(SourceDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+        }
         return null;
     }
 
@@ -85,24 +104,18 @@ public class DepositoryDAOImpl implements DepositoryDAO {
 
         try (Statement stmt = SQLiteConnection.getConnection().createStatement();
              ResultSet rs = stmt.executeQuery("select * from " + DEPOSITORY_TABLE)) {
-
             while (rs.next()) {
                 DefaultDepository depository = new DefaultDepository();
                 depository.setId(rs.getLong("id"));
                 depository.setName(rs.getString("name"));
+                depository.setParentId(rs.getLong("parent_id"));
 
-                long parentId = rs.getLong("parent_id");
-
-                treeUtils.addToTree(parentId, depository, depositoryList);
-
+                depositoryList.add(depository);
             }
-
             return depositoryList;// в итоге depositoryList должен содержать только корневые элементы
-
         } catch (SQLException e) {
             Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return null;
     }
 
@@ -131,19 +144,13 @@ public class DepositoryDAOImpl implements DepositoryDAO {
     public boolean delete(Depository depository) {
         // TODO реализовать - если есть ли операции по данному хранилищу - запрещать удаление
         try (PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("delete from " + DEPOSITORY_TABLE + " where id=?");) {
-
             stmt.setLong(1, depository.getId());
-
             if (stmt.executeUpdate() == 1) {
                 return true;
             }
-
         } catch (SQLException e) {
             Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return false;
     }
-
-
 }

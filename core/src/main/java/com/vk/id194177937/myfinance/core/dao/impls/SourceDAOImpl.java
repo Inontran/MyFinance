@@ -5,24 +5,21 @@ import com.vk.id194177937.myfinance.core.database.SQLiteConnection;
 import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.impls.DefaultSource;
 import com.vk.id194177937.myfinance.core.interfaces.Source;
-import com.vk.id194177937.myfinance.core.utils.TreeUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Created by Inontran on 08.07.16.
  */
 //TODO можно реализовать общий абстрактный класс и вынести туда общие методы (getAll, delete и пр.
+// реализация DAO не должна заниматься лишними делами - только связь с БД, заполнение объектов
 public class SourceDAOImpl implements SourceDAO {
 
     private static final String SOURCE_TABLE = "source";
