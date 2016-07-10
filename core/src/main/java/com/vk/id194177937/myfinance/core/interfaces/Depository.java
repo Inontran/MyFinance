@@ -24,7 +24,7 @@ public interface Depository extends TreeNode{
     void updateAmount(BigDecimal amount, Currency currency) throws CurrencyException, AmountException; // изменение баланса по определенной валюте
 
     // работа с валютой
-    void addCurrency(Currency currency) throws CurrencyException; // добавить новую валюту в хранилище
+    void addCurrency(Currency currency, BigDecimal bigDecimal) throws CurrencyException; // добавить новую валюту в хранилище
     void deleteCurrency(Currency currency) throws CurrencyException; // удалить валюту из хранилища
     Currency getCurrency(String code) throws CurrencyException; // получить валюту по коду
     List<Currency> getAvailableCurrencies(); // получить все доступные валюты хранилища в отдельной коллекции

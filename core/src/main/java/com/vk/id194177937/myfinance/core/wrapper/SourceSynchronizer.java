@@ -103,9 +103,33 @@ public class SourceSynchronizer implements SourceDAO {
     }
 
     @Override
-    public boolean addSource(Source source) {
+    public boolean add(Source source) {
         //TODO реализовать добавление нового источника
-//        if (sourceDAO.addSource(source)) sourceList.add(source);
+        if (sourceDAO.add(source)) {// если в БД добавился нормально
+            addToCollections(source);
+            return true;
+        }
         return false;
+    }
+
+    public Map<Long, Source> getIdentityMap() {
+        return identityMap;
+    }
+
+    public void setIdentityMap(Map<Long, Source> identityMap) {
+        this.identityMap = identityMap;
+    }
+
+    private void addToCollections(Source source) {
+        identityMap.put(source.getId(), source);
+
+        if (source.hasParent()) {
+            if (!source.getParent().getChildren().contains(source)) {// если ранее не был добавлен уже
+                source.getParent().add(source);
+            }
+        } else {// если добавляем элемент, у которого нет родителей (корневой)
+            sourceMap.get(source.getOperationType()).add(source);
+            treeList.add(source);
+        }
     }
 }

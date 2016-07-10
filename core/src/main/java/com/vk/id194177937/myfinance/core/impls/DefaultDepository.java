@@ -89,14 +89,13 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
 
 
 
-
     @Override
-    public void addCurrency(Currency currency) throws CurrencyException {
+    public void addCurrency(Currency currency, BigDecimal BigDecimal) throws CurrencyException {
         if (currencyAmounts.containsKey(currency)){
             throw new CurrencyException("Currency already exist");// пока просто сообщение на англ, без локализации
         }
         currencyList.add(currency);
-        currencyAmounts.put(currency, BigDecimal.ZERO);
+        currencyAmounts.put(currency, BigDecimal);
     }
 
     @Override

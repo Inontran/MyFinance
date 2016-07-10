@@ -113,7 +113,7 @@ public class SourceDAOImpl implements SourceDAO {
 
     // добавляет объект в БД и присваивает ему сгенерированный id
     @Override
-    public boolean addSource(Source source) {
+    public boolean add(Source source) {
         try (PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)", Statement.RETURN_GENERATED_KEYS);) {
 
             stmt.setString(1, source.getName());

@@ -39,11 +39,49 @@ public class DepositorySynchronizer implements DepositoryDAO {
         }
     }
 
+    // добавляет объект во все коллекции
+    private void addToCollections(Depository depository) {
+        identityMap.put(depository.getId(), depository);
+
+        if (depository.hasParent()) {
+            if (!depository.getParent().getChildren().contains(depository)) {// если ранее не был добавлен уже
+                depository.getParent().add(depository);
+            }
+        } else {// если добавляем элемент, у которого нет родителей (корневой)
+            treeList.add(depository);
+        }
+    }
+
+
+
+
+    // удаляет объект из всех коллекций
+    private void removeFromCollections(Depository depository) {
+        identityMap.remove(depository.getId());
+        if (depository.getParent() != null) {// если удаляем дочерний элемент
+            depository.getParent().remove(depository);// т.к. у каждого дочернего элемента есть ссылка на родительский - можно быстро удалять элемент из дерева без поиска по всему дереву
+        } else {// если удаляем элемент, у которого нет родителей
+            treeList.remove(depository);
+        }
+    }
 
     @Override
-    public boolean addCurrency(Depository depository, Currency currency) throws CurrencyException {
-        if (depositoryDAO.addCurrency(depository, currency)){
-            depository.addCurrency(currency);
+    public boolean add(Depository depository) {
+
+        if (depositoryDAO.add(depository)) {// если в БД добавилось нормально
+            addToCollections(depository);
+            return true;
+        }else{// откатываем добавление
+            // для отката можно использовать паттерн Command (для функции Undo)
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean addCurrency(Depository depository, Currency currency, BigDecimal amount) throws CurrencyException {
+        if (depositoryDAO.addCurrency(depository, currency, depository.getAmount(currency))){
+            depository.addCurrency(currency, depository.getAmount(currency));
             return true;
         }
         return false;
@@ -99,5 +137,21 @@ public class DepositorySynchronizer implements DepositoryDAO {
     @Override
     public Depository get(long id) {
         return identityMap.get(id);
+    }
+
+    public Map<Long, Depository> getIdentityMap() {
+        return identityMap;
+    }
+
+    public void setIdentityMap(Map<Long, Depository> identityMap) {
+        this.identityMap = identityMap;
+    }
+
+    public DepositoryDAO getDepositoryDAO() {
+        return depositoryDAO;
+    }
+
+    public void setDepositoryDAO(DepositoryDAO depositoryDAO) {
+        this.depositoryDAO = depositoryDAO;
     }
 }

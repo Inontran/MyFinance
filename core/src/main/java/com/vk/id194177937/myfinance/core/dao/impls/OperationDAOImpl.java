@@ -34,7 +34,7 @@ public class OperationDAOImpl implements OperationDAO {
     private Map<Long, Source> sourceIdentityMap;// чтобы получить по id нужный Source
     private Map<Long, Depository> depositoryIdentityMap; // чтобы получить по id нужный Storage
 
-    public OperationDAOImpl(Map<Long, Source> sourceIdentityMap, Map<Long, Depository> storageIdentityMap) {// IdentityMap - распространенное понятие, это коллекция, где вместо ключа id, а значение - это сам объект
+    public OperationDAOImpl(Map<Long, Source> sourceIdentityMap, Map<Long, Depository> depositoryIdentityMap) {// IdentityMap - распространенное понятие, это коллекция, где вместо ключа id, а значение - это сам объект
         this.sourceIdentityMap = sourceIdentityMap;
         this.depositoryIdentityMap = depositoryIdentityMap;
     }
@@ -47,7 +47,6 @@ public class OperationDAOImpl implements OperationDAO {
              ResultSet rs = stmt.executeQuery("select * from " + OPERATION_TABLE);) {
 
             while (rs.next()) {
-
                 operationList.add(fillOperation(rs));
 
             }
@@ -116,7 +115,7 @@ public class OperationDAOImpl implements OperationDAO {
                 operation.setFromSource(sourceIdentityMap.get(rs.getLong("from_source_id"))); // откуда поступили деньги
                 operation.setFromCurrency(Currency.getInstance(rs.getString("from_currency_code"))); // в какой валюте поступили
                 operation.setFromAmount(rs.getBigDecimal("from_amount")); // сумма поступления
-                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_storage_id")));// куда положим эти деньги
+                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_depository_id")));// куда положим эти деньги
 
 
                 return operation;
@@ -124,7 +123,7 @@ public class OperationDAOImpl implements OperationDAO {
             case OUTCOME: { // расход
                 OutcomeOperation operation = new OutcomeOperation();
 
-                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_storage_id"))); // откуда взяли деньги
+                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_depository_id"))); // откуда взяли деньги
                 operation.setFromCurrency(Currency.getInstance(rs.getString("from_currency_code")));// в какой валюте расход
                 operation.setFromAmount(rs.getBigDecimal("from_amount")); // сумма расхода
                 operation.setToSource(sourceIdentityMap.get(rs.getLong("to_source_id")));// на что потратили
@@ -136,10 +135,10 @@ public class OperationDAOImpl implements OperationDAO {
             case TRANSFER: { // перевод в одной валюте между хранилищами
                 TransferOperation operation = new TransferOperation();
 
-                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_storage_id")));// откуда переводим
+                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_depository_id")));// откуда переводим
                 operation.setFromCurrency(Currency.getInstance(rs.getString("from_currency_code"))); // в какой валюте переводим
                 operation.setFromAmount(rs.getBigDecimal("from_amount")); // какую сумму переводим
-                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_storage_id"))); // не создаем новый объект, используем ранее созданный объект источника
+                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_depository_id"))); // не создаем новый объект, используем ранее созданный объект источника
 
                 return operation;
             }
@@ -147,12 +146,12 @@ public class OperationDAOImpl implements OperationDAO {
             case CONVERT: { // конвертация из любой валюты в любую между хранилищами
                 ConvertOperation operation = new ConvertOperation();
 
-                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_storage_id"))); // откуда конвертируем
+                operation.setFromDepository(depositoryIdentityMap.get(rs.getLong("from_depository_id"))); // откуда конвертируем
                 operation.setFromCurrency(Currency.getInstance(rs.getString("from_currency_code"))); // в каой валюте
                 operation.setFromAmount(rs.getBigDecimal("from_amount")); // какая сумма в исходной валюте
 
 
-                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_storage_id"))); // куда конвертируем
+                operation.setToDepository(depositoryIdentityMap.get(rs.getLong("to_depository_id"))); // куда конвертируем
                 operation.setToCurrency((Currency.getInstance(rs.getString("to_currency_code")))); // валюта поступления
                 operation.setToAmount(rs.getBigDecimal("to_amount")); // какая итоговая сумма поступила в этой валюте
 
@@ -275,13 +274,13 @@ public class OperationDAOImpl implements OperationDAO {
 
         switch (operationType) {
             case INCOME:
-                return sb.append("from_source_id, from_currency_code, from_amount, to_storage_id) values(?,?,?,?,?,?,?)").toString();
+                return sb.append("from_source_id, from_currency_code, from_amount, to_depository_id) values(?,?,?,?,?,?,?)").toString();
             case OUTCOME:
-                return sb.append("from_storage_id, from_currency_code, from_amount, to_source_id) values(?,?,?,?,?,?,?)").toString();
+                return sb.append("from_depository_id, from_currency_code, from_amount, to_source_id) values(?,?,?,?,?,?,?)").toString();
             case TRANSFER:
-                return sb.append("from_storage_id, from_currency_code, from_amount, to_storage_id) values(?,?,?,?,?,?,?)").toString();
+                return sb.append("from_depository_id, from_currency_code, from_amount, to_depository_id) values(?,?,?,?,?,?,?)").toString();
             case CONVERT:
-                return sb.append("from_storage_id, from_currency_code, from_amount, to_storage_id, to_currency_code, to_amount) values(?,?,?,?,?,?,?,?,?)").toString();
+                return sb.append("from_depository_id, from_currency_code, from_amount, to_depository_id, to_currency_code, to_amount) values(?,?,?,?,?,?,?,?,?)").toString();
         }
 
         return null;

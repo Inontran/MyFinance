@@ -11,7 +11,7 @@ import java.util.Currency;
  */
 public interface DepositoryDAO extends CommonDAO<Depository> {
     //boolean нужен чтобы удостовериться, что операция прошла успешно
-    boolean addCurrency(Depository depository, Currency currency) throws CurrencyException;
+    boolean addCurrency(Depository depository, Currency currency, BigDecimal amount) throws CurrencyException;
     boolean deleteCurrency(Depository depository, Currency currency) throws CurrencyException;
     boolean updateAmount(Depository depository, Currency currency, BigDecimal bigDecimal);
 }
