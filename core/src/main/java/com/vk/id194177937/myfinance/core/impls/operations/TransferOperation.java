@@ -1,6 +1,7 @@
 package com.vk.id194177937.myfinance.core.impls.operations;
 
 import com.vk.id194177937.myfinance.core.abstracts.AbstractOperation;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -14,33 +15,12 @@ public class TransferOperation extends AbstractOperation {
 
     private Depository fromDepository;
     private Depository toDepository;
-    private BigDecimal amount;
-    private Currency currency;
+    private BigDecimal fromAmount;// сумма перевода
+    private Currency fromCurrency;// в какой валюте получили деньги
 
-    public TransferOperation(long id, Calendar dateTime, String addInfo, Depository fromDepository, Depository toDepository, BigDecimal amount, Currency currency) {
-        super(id, dateTime, addInfo);
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.amount = amount;
-        this.currency = currency;
+    public TransferOperation() {
+        super(OperationType.TRANSFER);
     }
-
-    public TransferOperation(long id, Depository fromDepository, Depository toDepository, BigDecimal amount, Currency currency) {
-        super(id);
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.amount = amount;
-        this.currency = currency;
-    }
-
-    public TransferOperation(Depository fromDepository, Depository toDepository, BigDecimal amount, Currency currency) {
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.amount = amount;
-        this.currency = currency;
-    }
-
-
 
     public Depository getFromDepository() {
         return fromDepository;
@@ -58,19 +38,19 @@ public class TransferOperation extends AbstractOperation {
         this.toDepository = toDepository;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getFromAmount() {
+        return fromAmount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setFromAmount(BigDecimal fromAmount) {
+        this.fromAmount = fromAmount;
     }
 
-    public Currency getCurrency() {
-        return currency;
+    public Currency getFromCurrency() {
+        return fromCurrency;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setFromCurrency(Currency fromCurrency) {
+        this.fromCurrency = fromCurrency;
     }
 }

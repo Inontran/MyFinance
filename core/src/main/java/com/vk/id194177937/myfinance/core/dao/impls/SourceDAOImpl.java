@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -109,14 +110,31 @@ public class SourceDAOImpl implements SourceDAO {
         return false;
     }
 
+
+    // добавляет объект в БД и присваивает ему сгенерированный id
     @Override
     public boolean addSource(Source source) {
-        try(PreparedStatement preparedStmt = SQLiteConnection.getConnection().prepareStatement("insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)")) {
-            preparedStmt.setString(1, source.getName());
-            preparedStmt.setLong(2, source.getParent().getId());
-            preparedStmt.setLong(3, source.getOperationType().getId());
+        try (PreparedStatement stmt = SQLiteConnection.getConnection().prepareStatement("insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)", Statement.RETURN_GENERATED_KEYS);) {
 
-            if (preparedStmt.executeUpdate() == 1) return true;
+            stmt.setString(1, source.getName());
+
+            if (source.hasParent()){
+                stmt.setLong(2, source.getParent().getId());
+            }else{
+                stmt.setNull(2, Types.BIGINT);
+            }
+
+            stmt.setLong(3, source.getOperationType().getId());
+
+            if (stmt.executeUpdate() == 1) {// если объект добавился нормально
+                try (ResultSet rs = stmt.getGeneratedKeys()) {// получаем id вставленной записи
+
+                    if (rs.next()) {
+                        source.setId(rs.getLong(1));// не забываем просвоить новый id в объект
+                    }
+                    return true;
+                }
+            }
         } catch (SQLException e) {
             Logger.getLogger(DepositoryDAOImpl.class.getName()).log(Level.SEVERE, null, e);
         }

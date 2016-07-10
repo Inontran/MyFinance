@@ -1,6 +1,7 @@
 package com.vk.id194177937.myfinance.core.impls.operations;
 
 import com.vk.id194177937.myfinance.core.abstracts.AbstractOperation;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.interfaces.Depository;
 
 import java.math.BigDecimal;
@@ -19,36 +20,9 @@ public class ConvertOperation extends AbstractOperation {
     private BigDecimal fromAmount;
     private BigDecimal toAmount;
 
-    public ConvertOperation(long id, Calendar dateTime, String addInfo, Depository fromDepository, Depository toDepository, Currency fromCurrency, Currency toCurrency, BigDecimal fromAmount, BigDecimal toAmount) {
-        super(id, dateTime, addInfo);
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.fromCurrency = fromCurrency;
-        this.toCurrency = toCurrency;
-        this.fromAmount = fromAmount;
-        this.toAmount = toAmount;
+    public ConvertOperation() {
+        super(OperationType.CONVERT);
     }
-
-    public ConvertOperation(long id, Depository fromDepository, Depository toDepository, Currency fromCurrency, Currency toCurrency, BigDecimal fromAmount, BigDecimal toAmount) {
-        super(id);
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.fromCurrency = fromCurrency;
-        this.toCurrency = toCurrency;
-        this.fromAmount = fromAmount;
-        this.toAmount = toAmount;
-    }
-
-    public ConvertOperation(Depository fromDepository, Depository toDepository, Currency fromCurrency, Currency toCurrency, BigDecimal fromAmount, BigDecimal toAmount) {
-        this.fromDepository = fromDepository;
-        this.toDepository = toDepository;
-        this.fromCurrency = fromCurrency;
-        this.toCurrency = toCurrency;
-        this.fromAmount = fromAmount;
-        this.toAmount = toAmount;
-    }
-
-
 
     public Depository getFromDepository() {
         return fromDepository;

@@ -49,10 +49,6 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
     }
 
 
-    @Override
-    public List<Currency> getAvailableCurrencies() {
-        return currencyList;
-    }
 
     public void setAvailableCurrencies(List<Currency> currencyList) {
         this.currencyList = currencyList;
@@ -70,44 +66,23 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
 
     @Override
     public BigDecimal getAmount(Currency currency) throws CurrencyException {
-        findCurrencyIntoList(currency);
+//        findCurrencyIntoList(currency);
         return currencyAmounts.get(currency);
     }
 
-
-    // ручное обновление баланса
     @Override
-    public void changeAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+    public void updateAmount(BigDecimal amount, Currency currency) throws CurrencyException, AmountException {
         findCurrencyIntoList(currency);
-        currencyAmounts.put(currency, amount);
-    }
-
-
-    // добавление денег в хранилище
-    @Override
-    public void addAmount(BigDecimal amount, Currency currency) throws CurrencyException {
-        findCurrencyIntoList(currency);
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        currencyAmounts.put(currency, oldAmount.add(amount));
-    }
-
-
-    // отнимаем деньги из хранилища
-    @Override
-    public void expenseAmount(BigDecimal amount, Currency currency) throws CurrencyException, AmountException {
-        findCurrencyIntoList(currency);
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        BigDecimal newValue = oldAmount.subtract(amount);
         checkAmount(amount);// не даем балансу уйти в минус
-        currencyAmounts.put(currency, newValue);
+        currencyAmounts.put(currency, amount);
     }
 
     // сумма не должна быть меньше нуля (в реальности такое невозможно, мы не можем потратить больше того, что есть)
     private void checkAmount(BigDecimal amount) throws AmountException {
-
-        if (amount.compareTo(BigDecimal.ZERO)<0){
-            throw new AmountException("Amount can't be < 0");
-        }
+        //временно уберем
+//        if (amount.compareTo(BigDecimal.ZERO)<0){
+//            throw new AmountException("Amount can't be < 0");
+//        }
 
     }
 
@@ -129,18 +104,23 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
         findCurrencyIntoList(currency);
 
         // не даем удалять валюту, если в хранилище есть деньги по этой валюте
-        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)){
-            throw new CurrencyException("Can't delete currency with amount");
-        }
+//        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)){
+//            throw new CurrencyException("Can't delete currency with amount");
+//        }
 
         currencyAmounts.remove(currency);
         currencyList.remove(currency);
     }
 
+    @Override
+    public List<Currency> getAvailableCurrencies() {
+        return currencyList;
+    }
 
     @Override
     public BigDecimal getApproxAmount(Currency currency) {
         // TODO реализовать расчет остатка с приведением в одну валюту
+        // реализуем позже
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -148,7 +128,6 @@ public class DefaultDepository extends AbstractTreeNode implements Depository{
     public Currency getCurrency(String code) throws CurrencyException {
         // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
         // можно использовать библиотеку Apache Commons Collections
-        findCurrencyIntoList(Currency.getInstance(code));
         for (Currency currency : currencyList) {
             if (currency.getCurrencyCode().equals(code)){
                 return currency;

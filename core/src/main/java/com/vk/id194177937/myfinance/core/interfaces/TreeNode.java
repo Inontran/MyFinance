@@ -16,6 +16,8 @@ public interface TreeNode {
 
     List<TreeNode> getChildren(); // дочерних элементов может быть любое количество
 
+    void setId(long id);
+
     TreeNode getChild(long id); // получение дочернего элемента по id
 
     TreeNode getParent(); // получение родительского элемента - пригодится в разных ситуациях, например для отчетности по всем узлам дерева
@@ -25,4 +27,6 @@ public interface TreeNode {
     boolean hasChildren();//проверка на наличие дочерних элементов
 
     long getParentId();
+
+    boolean hasParent();
 }
