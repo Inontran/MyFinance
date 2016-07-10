@@ -10,6 +10,7 @@ import com.vk.id194177937.myfinance.core.impls.operations.TransferOperation;
 import com.vk.id194177937.myfinance.core.interfaces.Operation;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,7 @@ public class OperationSynchronizer implements OperationDAO {
 
     @Override
     public List<Operation> getAll() {
+        Collections.sort(operationList);
         return operationList;
     }
 
@@ -76,7 +78,7 @@ public class OperationSynchronizer implements OperationDAO {
 
     @Override
     public boolean update(Operation operation) {
-        if (operationDAO.update(operation)) {
+        if (delete(operationDAO.get(operation.getId())) && add(operation)) {
             return true;
         }
         return false;

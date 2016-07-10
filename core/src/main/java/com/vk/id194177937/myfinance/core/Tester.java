@@ -90,7 +90,9 @@ public class Tester {
 //
 //            operationSync.add(operation);
 
-            operationSync.delete(operationSync.get(19));
+            ((TransferOperation)operationSync.get(20)).setFromAmount(new BigDecimal(1));
+            operationSync.update(operationSync.get(20));
+            operationSync.getAll();
         }catch (Exception e){
             e.printStackTrace();
         }

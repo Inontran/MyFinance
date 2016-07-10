@@ -169,7 +169,7 @@ public class OperationDAOImpl implements OperationDAO {
 
     @Override
     public boolean update(Operation operation) {
-        return false;
+        return (delete(operation) && add(operation));
     }
 
     @Override

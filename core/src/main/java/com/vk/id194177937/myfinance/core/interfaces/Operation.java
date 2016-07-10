@@ -4,7 +4,7 @@ import com.vk.id194177937.myfinance.core.enums.OperationType;
 
 import java.util.Calendar;
 
-public interface Operation {
+public interface Operation extends Comparable<Operation>{
 
     long getId();
 

@@ -66,4 +66,9 @@ public abstract class AbstractOperation implements Operation {
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
+
+    @Override
+    public int compareTo(Operation o) {
+        return o.getDateTime().compareTo(dateTime);
+    }
 }
