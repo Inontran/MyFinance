@@ -47,11 +47,43 @@ public class SourceSynchronizer implements SourceDAO {
     }
 
     private void fillSourceMap(List<Source> list) {
-        for (OperationType type : OperationType.values()) {
-            // используем lambda выражение для фильтрации
-            sourceMap.put(type, list.stream().filter(s -> s.getOperationType() == type).collect(Collectors.toList()));
-        }
+        // используем lambda выражение для фильтрации
+        // но так как, android пока не поддерживает Java 8, то lambda выражения не будут работать
+        // необходимо их заменить на аналогичный алгоритм
+//        for (OperationType type : OperationType.values()) {
+//            sourceMap.put(type, list.stream().filter(s -> s.getOperationType() == type).collect(Collectors.toList()));
+//        }
 
+        ArrayList<Source> incomeSource = new ArrayList<>();
+        ArrayList<Source> outcomeSource = new ArrayList<>();
+        ArrayList<Source> transferSource = new ArrayList<>();
+        ArrayList<Source> convertSource = new ArrayList<>();
+
+        // проход по коллекции только один раз
+        for (Source source : list){
+            switch (source.getOperationType()){
+                case INCOME:{
+                    incomeSource.add(source);
+                    break;
+                }
+                case OUTCOME:{
+                    outcomeSource.add(source);
+                    break;
+                }
+                case TRANSFER:{
+                    transferSource.add(source);
+                    break;
+                }
+                case CONVERT:{
+                    convertSource.add(source);
+                    break;
+                }
+            }
+        }
+        sourceMap.put(OperationType.INCOME, incomeSource);
+        sourceMap.put(OperationType.OUTCOME, outcomeSource);
+        sourceMap.put(OperationType.TRANSFER, transferSource);
+        sourceMap.put(OperationType.CONVERT, convertSource);
     }
 
     @Override

@@ -8,8 +8,10 @@ import com.vk.id194177937.myfinance.core.impls.operations.IncomeOperation;
 import com.vk.id194177937.myfinance.core.impls.operations.OutcomeOperation;
 import com.vk.id194177937.myfinance.core.impls.operations.TransferOperation;
 import com.vk.id194177937.myfinance.core.interfaces.Operation;
+import com.vk.id194177937.myfinance.core.interfaces.Source;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -57,11 +59,40 @@ public class OperationSynchronizer implements OperationDAO {
     private void fillOperationMap() {
         // в operationMap и operationList находятся одни и те же объекты!!
 
-        for (OperationType type : OperationType.values()) {
-            // используем lambda выражение для фильтрации
-            operationMap.put(type, operationList.stream().filter(o -> o.getOperationType() == type).collect(Collectors.toList()));
-        }
+//        for (OperationType type : OperationType.values()) {
+             //используем lambda выражение для фильтрации
+//            operationMap.put(type, operationList.stream().filter(o -> o.getOperationType() == type).collect(Collectors.toList()));
+//        }
+        ArrayList<Operation> incomeOperation = new ArrayList<>();
+        ArrayList<Operation> outcomeOperation = new ArrayList<>();
+        ArrayList<Operation> transferOperation = new ArrayList<>();
+        ArrayList<Operation> convertOperation = new ArrayList<>();
 
+        // проход по коллекции только один раз
+        for (Operation operation : operationList){
+            switch (operation.getOperationType()){
+                case INCOME:{
+                    incomeOperation.add(operation);
+                    break;
+                }
+                case OUTCOME:{
+                    outcomeOperation.add(operation);
+                    break;
+                }
+                case TRANSFER:{
+                    transferOperation.add(operation);
+                    break;
+                }
+                case CONVERT:{
+                    convertOperation.add(operation);
+                    break;
+                }
+            }
+        }
+        operationMap.put(OperationType.INCOME, incomeOperation);
+        operationMap.put(OperationType.OUTCOME, outcomeOperation);
+        operationMap.put(OperationType.TRANSFER, transferOperation);
+        operationMap.put(OperationType.CONVERT, convertOperation);
     }
 
 
