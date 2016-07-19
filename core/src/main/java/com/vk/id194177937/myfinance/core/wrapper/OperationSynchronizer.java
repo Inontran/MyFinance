@@ -60,7 +60,7 @@ public class OperationSynchronizer implements OperationDAO {
         // в operationMap и operationList находятся одни и те же объекты!!
 
 //        for (OperationType type : OperationType.values()) {
-             //используем lambda выражение для фильтрации
+        //используем lambda выражение для фильтрации
 //            operationMap.put(type, operationList.stream().filter(o -> o.getOperationType() == type).collect(Collectors.toList()));
 //        }
         ArrayList<Operation> incomeOperation = new ArrayList<>();

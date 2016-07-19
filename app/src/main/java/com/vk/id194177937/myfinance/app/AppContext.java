@@ -14,47 +14,9 @@ import java.io.OutputStream;
  */
 public class AppContext extends Application {
 
-    private static final String TAG = AppContext.class.getName();
-    private static final String DB_NAME = "money";
-    private static String dbFolder;
-    private static String dbPath;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        checkDbExist(this);
-    }
-
-    //если нет файла БД, то скопировать его из папки assets
-    private static void checkDbExist(Context context) {
-        //определить папку с данными приложения
-//        dbFolder = context.getApplicationContext().dataDir + "/" + "databases/";//этот способ не работает
-//        dbFolder = context.getApplicationContext().getDatabasePath(DB_NAME) + "/" + "databases/";//этот возвращает /data/user/0/com.vk.id194177937.myfinance/databases/money
-        dbFolder = "/data/data/" + context.getPackageName() + "/databases/";
-        dbPath = dbFolder + DB_NAME;
-
-        if (!new File(dbPath).exists()){
-            copyDataBase(context);
-        }
-    }
-
-    private static void copyDataBase(Context context){
-        //создаем папку databases
-        File databaseFolder = new File(dbFolder);
-        databaseFolder.mkdir();
-
-        try (InputStream sourceFile = context.getAssets().open(DB_NAME);
-             OutputStream destinationFolder = new FileOutputStream(dbPath)){
-
-            //копируем по байтам весь файл
-            byte[] byffer = new byte[1024];
-            int length;
-            while ( (length = sourceFile.read(byffer)) > 0 ){
-                destinationFolder.write(byffer, 0, length);
-            }
-
-        } catch (Exception e){
-            Log.e(TAG, e.getMessage());
-        }
+        DbConnection.initConnection(this);
     }
 }
