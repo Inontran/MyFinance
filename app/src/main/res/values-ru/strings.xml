@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Мои финансы</string>
+    <string name="title_activity_main">Главное окно</string>
+    <string name="navigation_drawer_open">Открыть навигационное окно</string>
+    <string name="navigation_drawer_close">Закрыть навигационное окно</string>
+    <string name="action_settings">Настройки</string>
+
+    <string name="loading">Загрузка...</string>
+</resources>

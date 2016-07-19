@@ -30,4 +30,5 @@ dependencies {
     compile 'com.android.support:design:23.+'
     compile 'org.sqldroid:sqldroid:+'
     compile project(':core')
+    compile 'com.jpardogo.googleprogressbar:library:1.2.0'
 }
