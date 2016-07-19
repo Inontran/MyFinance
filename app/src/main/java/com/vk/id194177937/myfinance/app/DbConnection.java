@@ -3,6 +3,8 @@ package com.vk.id194177937.myfinance.app;
 import android.content.Context;
 import android.util.Log;
 
+import com.vk.id194177937.myfinance.core.database.Initializer;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;

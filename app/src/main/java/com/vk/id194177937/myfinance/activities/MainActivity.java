@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.vk.id194177937.myfinance.R;
+import com.vk.id194177937.myfinance.core.database.Initializer;
+import com.vk.id194177937.myfinance.core.enums.OperationType;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,6 +44,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //TODO убрать после тестирования
+//        Initializer.getOperationSync().getList(OperationType.INCOME);
+
     }
 
     @Override
