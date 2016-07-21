@@ -3,7 +3,13 @@
     <string name="title_activity_main">Главное окно</string>
     <string name="navigation_drawer_open">Открыть навигационное окно</string>
     <string name="navigation_drawer_close">Закрыть навигационное окно</string>
-    <string name="action_settings">Настройки</string>
+    <string name="settings">Настройки</string>
 
     <string name="loading">Загрузка...</string>
+    <string name="accounts">Счета</string>
+    <string name="sources">Источники</string>
+    <string name="reports">Отчеты</string>
+    <string name="operations">Операции</string>
+    <string name="handbook">Справочники</string>
+    <string name="help">Справка</string>
 </resources>
