@@ -16,9 +16,11 @@ import android.view.MenuItem;
 import com.vk.id194177937.myfinance.R;
 import com.vk.id194177937.myfinance.core.database.Initializer;
 import com.vk.id194177937.myfinance.core.enums.OperationType;
+import com.vk.id194177937.myfinance.core.interfaces.TreeNode;
+import com.vk.id194177937.myfinance.fragments.HandbookListFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HandbookListFragment.OnListFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,5 +107,10 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(TreeNode item) {
+
     }
 }
