@@ -2,7 +2,7 @@ package com.vk.id194177937.myfinance.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import com.vk.id194177937.myfinance.R;
 import com.vk.id194177937.myfinance.adapters.TreeNodeAdapter;
 import com.vk.id194177937.myfinance.core.database.Initializer;
+import com.vk.id194177937.myfinance.core.interfaces.Source;
 import com.vk.id194177937.myfinance.core.interfaces.TreeNode;
+
+import java.util.List;
 
 
 /**
@@ -28,7 +31,10 @@ public class HandbookListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private OnListFragmentInteractionListener clickListener;
+
+    private List<? extends TreeNode> list;
+    private TreeNodeAdapter treeNodeAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,7 +76,7 @@ public class HandbookListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TreeNodeAdapter(Initializer.getSourceSync().getAll()/*, mListener*/));
+            recyclerView.setAdapter(new TreeNodeAdapter(Initializer.getSourceSync().getAll(), clickListener));
         }
         return view;
     }
@@ -80,17 +86,23 @@ public class HandbookListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+            clickListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
+        list = Initializer.getSourceSync().getAll();
+        treeNodeAdapter = new TreeNodeAdapter(list, clickListener);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        clickListener = null;
+    }
+
+    public void updateData(List<? extends TreeNode> list){
+        treeNodeAdapter.updateData(list);
     }
 
     /**

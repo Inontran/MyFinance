@@ -3,6 +3,8 @@ package com.vk.id194177937.myfinance.activities;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,32 +14,50 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.vk.id194177937.myfinance.R;
 import com.vk.id194177937.myfinance.core.database.Initializer;
-import com.vk.id194177937.myfinance.core.enums.OperationType;
 import com.vk.id194177937.myfinance.core.interfaces.TreeNode;
 import com.vk.id194177937.myfinance.fragments.HandbookListFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HandbookListFragment.OnListFragmentInteractionListener {
 
+    private ImageView backIcon;
+    private Toolbar toolbar;
+    private TextView toolbarTitle;
+
+    private TreeNode selectedNode;
+
+    private HandbookListFragment handbookListFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        initToolbar();
 
+//        initFloatingButton();
+
+        initNavigationDrawer(toolbar);
+
+        initFragment();
+    }
+
+    private void initFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        handbookListFragment = new HandbookListFragment();
+        fragmentTransaction.replace(R.id.handbook_list_fragment, handbookListFragment);
+
+        // fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void initNavigationDrawer(Toolbar toolbar) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -46,10 +66,40 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
-        //TODO убрать после тестирования
-//        Initializer.getOperationSync().getList(OperationType.INCOME);
+    private void initFloatingButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
 
+    public void initToolbar(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
+        backIcon = (ImageView) findViewById(R.id.back_icon);
+
+        backIcon.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                if (selectedNode.getParent() == null){
+                    handbookListFragment.updateData(Initializer.getSourceSync().getAll());
+                    toolbarTitle.setText(R.string.sources);
+                }else{
+                    handbookListFragment.updateData(selectedNode.getParent().getChildren());
+                    selectedNode = selectedNode.getParent();
+                    toolbarTitle.setText(selectedNode.getName());
+                }
+            }
+        });
     }
 
     @Override
@@ -111,6 +161,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(TreeNode item) {
-
+        this.selectedNode = item;
+        if (selectedNode.hasChildren()) {
+            toolbarTitle.setText(selectedNode.getName());// показывает выбранную категорию
+        }
     }
 }
