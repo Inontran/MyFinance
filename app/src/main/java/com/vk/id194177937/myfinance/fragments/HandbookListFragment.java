@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.vk.id194177937.myfinance.R;
 import com.vk.id194177937.myfinance.adapters.TreeNodeAdapter;
 import com.vk.id194177937.myfinance.core.database.Initializer;
-import com.vk.id194177937.myfinance.core.interfaces.Source;
 import com.vk.id194177937.myfinance.core.interfaces.TreeNode;
 
 import java.util.List;
@@ -76,7 +75,7 @@ public class HandbookListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TreeNodeAdapter(Initializer.getSourceSync().getAll(), clickListener));
+            recyclerView.setAdapter(treeNodeAdapter);
         }
         return view;
     }
